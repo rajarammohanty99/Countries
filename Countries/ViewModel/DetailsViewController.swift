@@ -10,7 +10,7 @@ import UIKit
 import RxSwift
 import RxCocoa
 
-class DetailsViewController: UIViewController {
+class DetailsViewController: BaseViewController {
 
     @IBOutlet weak var flagImgView: UIImageView!
     @IBOutlet weak var country_name: UILabel!
@@ -25,8 +25,6 @@ class DetailsViewController: UIViewController {
     let countriesDet:CountriesModel?
     
     private var disposeBag = DisposeBag()
-    
-    let task = PublishSubject<CountriesModel>()
     
     init(countriesModel: CountriesModel) {
         self.countriesDet = countriesModel
@@ -55,14 +53,18 @@ class DetailsViewController: UIViewController {
 
     @IBAction func saveData(_ sender: Any) {
         if let countriesDet = countriesDet {
-            self.task.onNext(countriesDet)
+            CoreDataRequest.coreDataRequestShareInstant.addData(countriesData: countriesDet, completion: { (success) -> Void in
+                if success {
+                    CFacade.ux.alert("saved")
+                } else {
+                }
+            })
         }
     }
     
     func setUpDetails() {
         guard let countriesDet = countriesDet else { return }
         let svgURL = countriesDet.flagUrl // URL(string: "https://restcountries.eu/data/vir.svg")!
-        //            print(svgURL.lastPathComponent)
         if (svgURL.lastPathComponent != "dza.svg"){
             weak var weakSelf = self
             let task = URLSession.shared.dataTask(with: svgURL, completionHandler: { (data, response, error) in
@@ -82,6 +84,7 @@ class DetailsViewController: UIViewController {
             })
             task.resume()
         }
+        
         if  let country_nameStr = countriesDet.country {
             country_name.text = "Country Name:- \(String(describing: country_nameStr))"
         }
@@ -98,13 +101,21 @@ class DetailsViewController: UIViewController {
             sub_region.text = "Sub region Name:- \(String(describing: sub_regionStr))"
         }
         
-        if  let currency = countriesDet.currencies[0].c_name {
+        if  let currency = countriesDet.currencies[0]?.c_name {
             currencies.text = "Country currency:- \(String(describing: currency))"
         }
         
-        callingcode.text = "Calling code:- \(String(describing: countriesDet.callingcode[0]))"
-        time_zone.text = "time zone:- \(String(describing: countriesDet.time_zone[0]))"
-        languages.text = "Country languages:- \(String(describing: countriesDet.languages[0].name))"
+        if  let calling_code = countriesDet.callingcode?[0] {
+            callingcode.text = "Calling code:- \(String(describing: calling_code))"
+        }
+        
+        if  let timezone = countriesDet.time_zone?[0] {
+            time_zone.text = "time zone:- \(String(describing: timezone))"
+        }
+        
+        if  let _languages = countriesDet.languages[0]?.name {
+            languages.text = "Country languages:- \(String(describing: _languages))"
+        }
     }
 
 }

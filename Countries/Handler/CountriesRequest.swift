@@ -13,9 +13,9 @@ class CountriesRequest: APIRequest {
     var path = "rest/v2/name"
     var parameters = String()
     
-    
     init(name: String) {
         parameters = name
     }
 }
+
 

@@ -9,19 +9,15 @@
 import Foundation
 
 struct Currency:Codable {
-    let code: String?
     let c_name: String?
-    let symbol: String?
     
     private enum CodingKeys: String, CodingKey {
-        case code = "code"
         case c_name = "name"
-        case symbol = "symbol"
     }
 }
 
 struct Language:Codable {
-    let name: String
+    let name: String?
     
     private enum CodingKeys: String, CodingKey {
         case name = "name"
@@ -29,15 +25,15 @@ struct Language:Codable {
 }
 
 struct CountriesModel: Codable {
-    private let flag: String
+    let flag: String?
     let capital: String?
     let country: String?
-    let callingcode: [String]
+    let callingcode: [String]?
     let region: String?
     let sub_region: String?
-    let time_zone: [String]
-    let currencies: [Currency]
-    let languages: [Language]
+    let time_zone: [String]?
+    let currencies: [Currency?]
+    let languages: [Language?]
     
     
     private enum CodingKeys: String, CodingKey {
@@ -54,7 +50,7 @@ struct CountriesModel: Codable {
     
     var flagUrl:URL{
         get{
-            return URL(string: flag) ?? URL(fileURLWithPath: "trst")
+            return URL(string: flag ?? "trst")!
         }
     }
 }

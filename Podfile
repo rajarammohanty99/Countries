@@ -8,9 +8,9 @@ target 'Countries' do
   # Pods for Countries
     pod 'RxSwift',    '~> 5'
     pod 'RxCocoa',    '~> 5'
-    pod 'Kingfisher', '~> 5.0'
     pod 'SwiftSVG', '~> 2.0'
     pod 'PocketSVG', '~> 2.0'
+    pod 'ReachabilitySwift'
 
   target 'CountriesTests' do
     inherit! :search_paths

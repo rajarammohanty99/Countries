@@ -22,7 +22,6 @@ class TableCellView: UITableViewCell {
 
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
         // Configure the view for the selected state
     }
     
@@ -30,12 +29,16 @@ class TableCellView: UITableViewCell {
         didSet {
             guard let countriesModel = countriesModel else { return }
             self.countryLab?.text = countriesModel.country
-            let svgURL = /*countriesModel.flagUrl*/ URL(string: "https://restcountries.eu/data/vir.svg")!
-//            print(svgURL.lastPathComponent)
+            let svgURL = countriesModel.flagUrl// URL(string: "https://restcountries.eu/data/vir.svg")!
             if (svgURL.lastPathComponent != "dza.svg"){
                 let task = URLSession.shared.dataTask(with: svgURL, completionHandler: { (data, response, error) in
+                    
+                    if error != nil {
+                        return
+                    }
+                    
                     if let data = data {
-                        print(svgURL)
+                        //print(svgURL)
                         CALayer(SVGData: data) { (svgLayer) in
                             DispatchQueue.main.async {
                                 svgLayer.resizeToFit(self.svgView.bounds)
@@ -43,12 +46,9 @@ class TableCellView: UITableViewCell {
                             }
                         }
                     }
-                    
                 })
                 task.resume()
             }
-            
-            
         }
     }
 }

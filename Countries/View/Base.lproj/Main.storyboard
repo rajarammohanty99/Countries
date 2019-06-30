@@ -43,7 +43,7 @@
                                                             <color key="backgroundColor" red="0.40760584020000001" green="0.26186569409999999" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </imageView>
                                                     </subviews>
-                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                    <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="51" id="GE1-wN-rkz"/>
                                                         <constraint firstItem="6Sd-e4-NaK" firstAttribute="leading" secondItem="Vog-ew-NzN" secondAttribute="leading" id="GSA-su-WBY"/>
@@ -64,7 +64,7 @@
                                                 <constraint firstItem="TX7-ky-nZL" firstAttribute="top" secondItem="pHz-fw-QOd" secondAttribute="top" constant="23" id="dQM-lg-hsA"/>
                                             </constraints>
                                         </tableViewCellContentView>
-                                        <color key="backgroundColor" red="1" green="0.33134433977777722" blue="0.52095917747502341" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                         <viewLayoutGuide key="safeArea" id="95i-7c-nT6"/>
                                         <connections>
                                             <outlet property="countryLab" destination="TX7-ky-nZL" id="gqU-gx-0wl"/>

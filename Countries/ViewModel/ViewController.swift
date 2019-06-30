@@ -9,17 +9,17 @@
 import UIKit
 import RxSwift
 import RxCocoa
+import Reachability
 
-
-class ViewController: UIViewController {
+class ViewController: BaseViewController {
     
     @IBOutlet weak var tableView: UITableView!
-    
     private let cellIdentifier = "cellIdentifier"
     private let apiClient = APIClient()
     private let disposeBag = DisposeBag()
-    
-    var tasks :Variable<[CountriesModel]> = Variable([])
+    private var reachability: Reachability?
+    private var isOnline:Bool = false
+
 
     private let searchController: UISearchController = {
         let searchController = UISearchController(searchResultsController: nil)
@@ -32,25 +32,64 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         configureProperties()
-        configureReactiveBinding()
+        onlineOfflineConfigureReactiveBinding()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        reachabilityConfig()
+    }
+    
+    private func reachabilityConfig(){
+        let reachability: Reachability?
+        reachability = Reachability()
+        self.reachability = reachability
+        
+        reachability?.whenReachable = {[weak self] reachability in
+            print("reachable")
+            self?.isOnline = true
+        }
+        reachability?.whenUnreachable = { [weak self] _ in
+            print("Not reachable")
+            self?.isOnline = false
+        }
+        
+        startNotifier()
+    }
+    
+    func startNotifier() {
+        do {
+            try reachability?.startNotifier()
+        } catch {
+            return
+        }
+    }
+    
+    func stopNotifier() {
+        reachability?.stopNotifier()
+        reachability = nil
+    }
+    
+    deinit {
+        stopNotifier()
     }
     
     private func configureProperties() {
-//        let nib = UINib(nibName: "TableCellView", bundle: nil)
-//        tableView.register(nib, forCellReuseIdentifier: cellIdentifier)
         navigationItem.searchController = searchController
         navigationItem.title = "Countries finder"
         navigationItem.hidesSearchBarWhenScrolling = false
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
+}
+
+extension ViewController{
     
-    private func configureReactiveBinding() {
+    private func onlineOfflineConfigureReactiveBinding() {
         searchController.searchBar.rx.text.asObservable()
             .map { ($0 ?? "").lowercased() }
-            .map { CountriesRequest(name: $0) }
+            .map { self.isOnline ? CountriesRequest(name: $0) : CountriesRequest(name: $0)}
             .flatMap { request -> Observable<[CountriesModel]> in
-                return self.apiClient.send(apiRequest: request)
+                return self.isOnline ? self.apiClient.send(apiRequest: request) : self.apiClient.getOfflineData(searchText: request.parameters)
             }
             .bind(to: tableView.rx.items(cellIdentifier: cellIdentifier, cellType: TableCellView.self)) { index, model, cell in
                 cell.countriesModel = model
@@ -60,12 +99,9 @@ class ViewController: UIViewController {
         tableView.rx.modelSelected(CountriesModel.self)
             .map { DetailsViewController.init(countriesModel: $0) }
             .subscribe(onNext: { [weak self] detailsViewController in
-                guard let strongSelf = self else { return }
                 self?.navigationController?.pushViewController(detailsViewController, animated: true)
-                detailsViewController.task.subscribe(onNext :{ [weak self] task in
-                    self?.tasks.value.append(task)
-                }).disposed(by: strongSelf.disposeBag)
             })
             .disposed(by: disposeBag)
     }
 }
+
